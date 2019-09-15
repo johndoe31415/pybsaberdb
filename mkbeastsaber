@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+#	pybsaberdb - Python interface to BeastSaber database
+#	Copyright (C) 2019-2019 Johannes Bauer
+#
+#	This file is part of pybsaberdb.
+#
+#	pybsaberdb is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; this program is ONLY licensed under
+#	version 3 of the License, later versions are explicitly excluded.
+#
+#	pybsaberdb is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with pybsaberdb; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#	Johannes Bauer <JohannesBauer@gmx.de>
+
+from BeastSaberDB import BeastSaberDB
+
+db = BeastSaberDB()
+
+
+#print(self.fill_songs_db())
+#print(self.get_rating("776"))
+#print(self.get_api_desc())
+#print(self.get_songs())
+#print(self.retrieve_missing_ratings())
+#print(self.fill_songs_db(page = 2000))
+#print(self.fill_song_details("622f"))
+db.fill_songs_complete_db(verbose = True)
+db.fill_missing_song_details()
