@@ -2,3 +2,4 @@
 __pycache__
 beastsaber.sqlite3
 .requests_cache.sqlite3
+downloads

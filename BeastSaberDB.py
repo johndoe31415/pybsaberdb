@@ -41,9 +41,9 @@ class BeastSaberDB():
 		"details_html":		"https://bsaber.com/songs/%(song_key)s/",
 	}
 
-	def __init__(self):
+	def __init__(self, dbfile = "beastsaber.sqlite3"):
 		self._session = CachedRequests(fixed_headers = { "Accept": "application/json" }, minimum_gracetime_secs = 1.0, cache_failed_requests = False)
-		self._db = sqlite3.connect("beastsaber.sqlite3")
+		self._db = sqlite3.connect(dbfile)
 		self._cursor = self._db.cursor()
 		self._dict_cursor = self._db.cursor()
 		self._dict_cursor.row_factory = _dict_factory
@@ -156,13 +156,13 @@ class BeastSaberDB():
 			if verbose:
 				print("%5.1f%% (%d of %d): %s (%s)" % (rid / len(song_keys) * 100, rid, len(song_keys), song_key, str(details)))
 
-	def search_songs(self, must_have_difficulties = None, minimum_percentage = None, minimum_votes = None, must_be_recommended = False):
+	def search_songs(self, must_have_difficulties = None, minimum_percentage = None, minimum_votes = None, must_be_recommended = False, include_categories = None, exclude_categories = None):
 		where = set()
 		where.add("metadata_update_timet IS NOT NULL")
 		if minimum_votes is not None:
 			where.add("(thumbs_up + thumbs_down > %d)" % (minimum_votes))
 		if minimum_percentage is not None:
-			where.add("(thumbs_up / (thumbs_up + thumbs_down)) > %.3f" % (minimum_percentage / 100))
+			where.add("((0.0 + thumbs_up) / (thumbs_up + thumbs_down)) > %.3f" % (minimum_percentage / 100))
 		if must_have_difficulties is not None:
 			if "easy" in must_have_difficulties:
 				where.add("difficulty_easy = 1")
@@ -181,4 +181,10 @@ class BeastSaberDB():
 		sql = "SELECT song_key, level_author, title, hash, difficulty_easy, difficulty_normal, difficulty_hard, difficulty_expert, difficulty_expertplus, recommended, thumbs_up, thumbs_down, categories_json FROM songs %s;" % (where_clause)
 		for rowdict in self._dict_cursor.execute(sql).fetchall():
 			song = Song.from_rowdict(rowdict)
-			print(song)
+			if include_categories is not None:
+				if not song.includes_all_categories(include_categories):
+					continue
+			if exclude_categories is not None:
+				if song.includes_any_category(exclude_categories):
+					continue
+			yield song

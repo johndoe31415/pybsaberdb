@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+#	pybsaberdb - Python interface to BeastSaber database
+#	Copyright (C) 2019-2019 Johannes Bauer
+#
+#	This file is part of pybsaberdb.
+#
+#	pybsaberdb is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; this program is ONLY licensed under
+#	version 3 of the License, later versions are explicitly excluded.
+#
+#	pybsaberdb is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with pybsaberdb; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#	Johannes Bauer <JohannesBauer@gmx.de>
+
+import os
+import requests
+import contextlib
+from BeastSaberDB import BeastSaberDB
+
+class SongDownloader():
+	def __init__(self):
+		self._session = requests.Session()
+
+	def download(self, song, directory):
+		with contextlib.suppress(FileExistsError):
+			os.makedirs(directory)
+		output_file = directory + "/" + song.song_hash + ".zip"
+		if os.path.isfile(output_file):
+			return
+		response = self._session.get(song.download_url)
+		if response.status_code == 200:
+			with open(output_file, "wb") as f:
+				f.write(response.content)
+		else:
+			print("Failed to retrieve %s: %s" % (song, response))
+
+downloader = SongDownloader()
+db = BeastSaberDB(dbfile = "copy")
+songs = list(db.search_songs(minimum_votes = 50, minimum_percentage = 95, must_have_difficulties = [ "hard" ]))
+songs.sort(key = lambda song: -song.percentage)
+for song in songs:
+	print(song)
+	downloader.download(song, "downloads/")

@@ -22,11 +22,11 @@
 import json
 
 class Song():
-	def __init__(self, song_key, level_author, title, hash, difficulties, recommended, thumbs_up, thumbs_down, categories):
+	def __init__(self, song_key, level_author, title, song_hash, difficulties, recommended, thumbs_up, thumbs_down, categories):
 		self._song_key = song_key
 		self._level_author = level_author
 		self._title = title
-		self._hash = hash
+		self._song_hash = song_hash
 		self._difficulties = difficulties
 		self._recommended = recommended
 		self._thumbs_up = thumbs_up
@@ -46,8 +46,8 @@ class Song():
 		return self._title
 
 	@property
-	def hash(self):
-		return self._hash
+	def song_hash(self):
+		return self._song_hash
 
 	@property
 	def difficulties(self):
@@ -94,7 +94,21 @@ class Song():
 		if rowdict["difficulty_expertplus"]:
 			difficulties.add("expert+")
 		categories = set(json.loads(rowdict["categories_json"]))
-		return cls(song_key = rowdict["song_key"], level_author = rowdict["level_author"], title = rowdict["title"], hash = rowdict["hash"], difficulties = difficulties, recommended = bool(rowdict["recommended"]), thumbs_up = rowdict["thumbs_up"], thumbs_down = rowdict["thumbs_down"], categories = categories)
+		return cls(song_key = rowdict["song_key"], level_author = rowdict["level_author"], title = rowdict["title"], song_hash = rowdict["hash"], difficulties = difficulties, recommended = bool(rowdict["recommended"]), thumbs_up = rowdict["thumbs_up"], thumbs_down = rowdict["thumbs_down"], categories = categories)
+
+	def includes_all_categories(self, categories):
+		return all(category in self.categories for category in categories)
+
+	def includes_any_category(self, categories):
+		return any(category in self.categories for category in categories)
+
+	@property
+	def download_url(self):
+		return "https://beatsaver.com/cdn/%s/%s.zip" % (self.song_key, self.song_hash)
 
 	def __str__(self):
-		return "%s: %s (by %s) -- %.1f%% (%d votes, %d up, %d down)" % (self.song_key, self.title, self.level_author, self.percentage, self.total_votes, self.thumbs_up, self.thumbs_down)
+		if len(self.categories) == 0:
+			category_str = "/"
+		else:
+			category_str = ", ".join(sorted(self.categories))
+		return "%s: %s (by %s) -- %.1f%% (%d votes, %d up, %d down), categories: %s" % (self.song_key, self.title, self.level_author, self.percentage, self.total_votes, self.thumbs_up, self.thumbs_down, category_str)
