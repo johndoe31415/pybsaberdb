@@ -64,6 +64,8 @@ parser.add_argument("-p", "--min-percentage", metavar = "percent", type = float,
 parser.add_argument("-m", "--min-votes", metavar = "count", type = int, help = "Specify a minimum number of votes that a song must have.")
 parser.add_argument("-e", "--exclude-category", metavar = "category", type = str, action = "append", default = [ ], help = "Specify a genre category that should be excluded. Can be specified multiple times.")
 parser.add_argument("-i", "--include-category", metavar = "category", type = str, action = "append", default = [ ], help = "Specify a genre category that must be included. Can be specified multiple times.")
+parser.add_argument("-t", "--song-title", metavar = "title", type = str, action = "append", default = [ ], help = "Specify words that must be included in the title. Can be specified multiple times.")
+parser.add_argument("-a", "--level-author", metavar = "author", type = str, action = "append", default = [ ], help = "Specify words that must be included in the level author. Can be specified multiple times.")
 parser.add_argument("--recommended", action = "store_true", help = "Specify that the song must be recommended.")
 parser.add_argument("-l", "--download", action = "store_true", help = "Download the song files.")
 parser.add_argument("-o", "--download-dir", metavar = "dir", type = str, default = "download", help = "Specify a download directory. Defaults to %(default)s.")
@@ -83,6 +85,10 @@ if len(args.exclude_category) > 0:
 	search_criteria["exclude_categories"] = args.exclude_category
 if len(args.include_category) > 0:
 	search_criteria["include_categories"] = args.include_category
+if len(args.song_title) > 0:
+	search_criteria["song_title"] = args.song_title
+if len(args.level_author) > 0:
+	search_criteria["level_author"] = args.level_author
 if args.recommended:
 	search_criteria["must_be_recommended"] = True
 

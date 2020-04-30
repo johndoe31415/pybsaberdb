@@ -1,5 +1,5 @@
 #	pybsaberdb - Python interface to BeastSaber database
-#	Copyright (C) 2019-2019 Johannes Bauer
+#	Copyright (C) 2019-2020 Johannes Bauer
 #
 #	This file is part of pybsaberdb.
 #
@@ -156,7 +156,7 @@ class BeastSaberDB():
 			if verbose:
 				print("%5.1f%% (%d of %d): %s (%s)" % (rid / len(song_keys) * 100, rid, len(song_keys), song_key, str(details)))
 
-	def search_songs(self, must_have_difficulties = None, minimum_percentage = None, minimum_votes = None, must_be_recommended = False, include_categories = None, exclude_categories = None):
+	def search_songs(self, must_have_difficulties = None, minimum_percentage = None, minimum_votes = None, must_be_recommended = False, include_categories = None, exclude_categories = None, song_title = None, level_author = None):
 		where = set()
 		where.add("metadata_update_timet IS NOT NULL")
 		if minimum_votes is not None:
@@ -176,6 +176,12 @@ class BeastSaberDB():
 				where.add("difficulty_expertplus = 1")
 		if must_be_recommended:
 			where.add("recommended = 1")
+		if song_title is not None:
+			for word in song_title:
+				where.add("title LIKE '%%%s%%'" % (word))
+		if level_author is not None:
+			for word in level_author:
+				where.add("level_author LIKE '%%%s%%'" % (word))
 
 		where_clause = "WHERE " + (" AND ".join(sorted("(%s)" % (clause) for clause in where)))
 		sql = "SELECT song_key, level_author, title, hash, difficulty_easy, difficulty_normal, difficulty_hard, difficulty_expert, difficulty_expertplus, recommended, thumbs_up, thumbs_down, categories_json FROM songs %s;" % (where_clause)
