@@ -13,5 +13,8 @@ to click and wait 5 seconds for the preview every time. This script retrieves
 all data from BeastSaber and then allows you to execute SQL-queries on the
 resulting Sqlite3 database to find what you're looking for.
 
+## Dependencies
+python3-lxml.
+
 ## License
 GNU GPL-3.
