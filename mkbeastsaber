@@ -24,7 +24,6 @@ from BeastSaberDB import BeastSaberDB
 
 db = BeastSaberDB()
 
-
 #print(self.fill_songs_db())
 #print(self.get_rating("776"))
 #print(self.get_api_desc())
@@ -33,6 +32,6 @@ db = BeastSaberDB()
 #print(self.fill_songs_db(page = 2000))
 #print(self.fill_song_details("622f"))
 #db.fill_songs_complete_db(verbose = True)
-db.fill_missing_song_details(verbose = True)
-#db.search_songs()
+#db.fill_missing_song_details(verbose = True)
+db.search_songs()
 
