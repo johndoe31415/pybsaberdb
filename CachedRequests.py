@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 #	CachedRequests - Use python-requests and cache into a sqlite3 database
-#	Copyright (C) 2019-2019 Johannes Bauer
+#	Copyright (C) 2019-2020 Johannes Bauer
 #
 #	This file is part of pycommon.
 #
@@ -59,6 +59,12 @@ class CachedRequests():
 				content blob NOT NULL
 			);
 			""")
+
+		expiration_time = time.time() - cache_duration_secs
+		(expired_cache_size, ) = self._cursor.execute("SELECT SUM(LENGTH(content)) FROM cached_requests WHERE stored_timestamp < ?;", (expiration_time, )).fetchone()
+		if (expired_cache_size is not None) and (expired_cache_size > 10 * 1024 * 1024):
+			# Clean up cache if we have more than 10 MiB dangling about
+			self._cursor.execute("DELETE FROM cached_requests WHERE stored_timestamp < ?;", (expiration_time, ))
 		self._db.commit()
 
 	@staticmethod
