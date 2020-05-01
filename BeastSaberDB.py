@@ -162,7 +162,7 @@ class BeastSaberDB():
 		if minimum_votes is not None:
 			where.add("(thumbs_up + thumbs_down > %d)" % (minimum_votes))
 		if minimum_percentage is not None:
-			where.add("((0.0 + thumbs_up) / (thumbs_up + thumbs_down)) > %.3f" % (minimum_percentage / 100))
+			where.add("((1.0 + thumbs_up) / (thumbs_up + thumbs_down + 2)) > %.3f" % (minimum_percentage / 100))
 		if must_have_difficulties is not None:
 			if "easy" in must_have_difficulties:
 				where.add("difficulty_easy = 1")

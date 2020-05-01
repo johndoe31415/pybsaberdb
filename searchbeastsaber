@@ -69,7 +69,7 @@ parser.add_argument("-a", "--level-author", metavar = "author", type = str, acti
 parser.add_argument("--recommended", action = "store_true", help = "Specify that the song must be recommended.")
 parser.add_argument("-l", "--download", action = "store_true", help = "Download the song files.")
 parser.add_argument("-o", "--download-dir", metavar = "dir", type = str, default = "download", help = "Specify a download directory. Defaults to %(default)s.")
-parser.add_argument("--symlink-dir", metavar = "dir", type = str, help = "Not only download a song to a specified directory, but create a symbol link as well. Can be used to easily download a lot of songs and then filter them later.")
+parser.add_argument("-s", "--symlink-dir", metavar = "dir", type = str, help = "Not only download a song to a specified directory, but create a symbol link as well. Can be used to easily download a lot of songs and then filter them later.")
 parser.add_argument("--limit", metavar = "count", type = int, help = "Limit to this number of songs total.")
 parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increases verbosity. Can be specified multiple times to increase.")
 args = parser.parse_args(sys.argv[1:])

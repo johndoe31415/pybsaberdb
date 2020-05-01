@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+#	pybsaberdb - Python interface to BeastSaber database
+#	Copyright (C) 2019-2020 Johannes Bauer
+#
+#	This file is part of pybsaberdb.
+#
+#	pybsaberdb is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; this program is ONLY licensed under
+#	version 3 of the License, later versions are explicitly excluded.
+#
+#	pybsaberdb is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with pybsaberdb; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#	Johannes Bauer <JohannesBauer@gmx.de>
+
+import sys
+import zipfile
+import json
+import tempfile
+import subprocess
+from FriendlyArgumentParser import FriendlyArgumentParser
+
+parser = FriendlyArgumentParser(description = "Play a BeatSaber zipped song file.")
+parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increases verbosity. Can be specified multiple times to increase.")
+parser.add_argument("songfile", metavar = "songfile", type = str, nargs = "+", help = "ZIP file(s) to play")
+args = parser.parse_args(sys.argv[1:])
+
+for songfile in args.songfile:
+	try:
+		zf = zipfile.ZipFile(songfile, "r")
+	except zipfile.BadZipFile as e:
+		print("Cannot open %s: %s" % (songfile, str(e)))
+		continue
+	with zf.open("info.dat") as f:
+		song_info = json.load(f)
+
+	audio_filename = song_info["_songFilename"]
+	print("%s: %s - %s (mapped by %s)" % (songfile, song_info["_songAuthorName"], song_info["_songName"], song_info["_levelAuthorName"]))
+
+	with zf.open(audio_filename) as f, tempfile.NamedTemporaryFile(prefix = "beatsaber_", suffix = ".ogg") as g:
+		g.write(f.read())
+		g.flush()
+		subprocess.call([ "mplayer", g.name ])
+		print()

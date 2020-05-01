@@ -1,5 +1,5 @@
 #	pybsaberdb - Python interface to BeastSaber database
-#	Copyright (C) 2019-2019 Johannes Bauer
+#	Copyright (C) 2019-2020 Johannes Bauer
 #
 #	This file is part of pybsaberdb.
 #
@@ -74,11 +74,18 @@ class Song():
 		return self.thumbs_up + self.thumbs_down
 
 	@property
-	def percentage(self):
+	def raw_percentage(self):
 		if self.total_votes == 0:
 			return 0
 		else:
 			return self.thumbs_up / self.total_votes * 100
+
+	@property
+	def percentage(self):
+		if self.total_votes == 0:
+			return 0
+		else:
+			return (self.thumbs_up + 1) / (self.total_votes + 2) * 100
 
 	@classmethod
 	def from_rowdict(cls, rowdict):
